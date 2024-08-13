@@ -12,7 +12,7 @@ class SelectedProduct(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(_("quantity"), default=1)
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="my_selected_products")
-    total_price = models.DecimalField(_("total price"))
+    total_price = models.DecimalField(_("total price"),max_digits=13, decimal_places=2)
     
     def save(self, *a, **b) -> None:
         if self.quantity < 1:

@@ -22,7 +22,7 @@ INSTALLED_APPS = [
 
     'base',
     'account',
-    'category',
+    'discount',
     'order',
     'product',
 ]
