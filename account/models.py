@@ -9,7 +9,7 @@ from base.models import BaseModel
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, phone_number, password, **extra_fields):
+    def create_user(self, phone_number, password=None, **extra_fields):
 
         if not phone_number:
             raise ValueError("Phone number must be provided")
@@ -18,7 +18,8 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", False)
 
         user = self.model(phone_number=phone_number, **extra_fields)
-        user.set_password(password)
+        if password:
+            user.set_password(password)
         user.save(using=self._db)
         return user
     
@@ -51,7 +52,10 @@ class MyUser(AbstractUser):
     address = models.TextField(_("Address"), null=True, blank=True)
     username = models.CharField(_("username"), max_length=150, null=True, blank=True )
     is_active = models.BooleanField(_("active"), default=False)
-
+    photo = models.ImageField(upload_to='users/', default='user.png')
+    refresh = models.CharField(max_length=300, null=True, blank=True)
+    access = models.CharField(max_length=300, null=True, blank=True)
+    
     USERNAME_FIELD = "phone_number"
     objects = UserManager()
     REQUIRED_FIELDS = []
@@ -69,7 +73,8 @@ def check_kod(kod):
 
 class Tasqidlash(BaseModel):
     code = models.PositiveIntegerField(_('Verification code'), validators=[check_kod])
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="user_kodi")
+    phone_number = models.CharField(_("Phone number"), max_length=15)
+    expires_at = models.DateTimeField()
     is_active = models.BooleanField(_("Active"), default=True)
 
     def __str__(self) -> str:
